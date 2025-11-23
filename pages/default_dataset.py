@@ -1,65 +1,16 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
+import os 
 
-# ==============================================
-# PAGE CONFIG
-# ==============================================
 st.set_page_config(
-    page_title="How the World Changes Over Years",
-    layout="wide"
+    page_title="Home",
+    layout="centered"
 )
 
-# Simple funky CSS
-st.markdown(
-    """
-    <style>
-    .main {
-        background: linear-gradient(135deg, #020617 0%, #0f172a 40%, #1e293b 100%);
-        color: #e5e7eb;
-    }
-    .block-title {
-        padding: 12px 18px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #22c55e, #0ea5e9);
-        color: white;
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        display: inline-block;
-    }
-    .pill {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background-color: rgba(148, 163, 184, 0.3);
-        font-size: 11px;
-        margin-right: 4px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Hero section
-st.markdown('<div class="block-title">🌍 How the World Changes Over Years</div>', unsafe_allow_html=True)
-st.write(
-    "Visualise **global real data** – temperature, CO₂, GDP, population, migration, "
-    "internet usage, deaths, refugees and more – on an interactive world map and charts."
-)
-
-with st.container():
-    c1, c2, c3 = st.columns(3)
-    c1.markdown('<div class="pill">📅 1960 – 2020+</div>', unsafe_allow_html=True)
-    c2.markdown('<div class="pill">🗺️ Map & Charts</div>', unsafe_allow_html=True)
-    c3.markdown('<div class="pill">🎞️ Static & Animated</div>', unsafe_allow_html=True)
 
 DATASET_DIR = "datasets"
 
-# ==============================================
-# HELPER
-# ==============================================
 def melt_years(df, country_col, value_name="Value"):
     df = df.copy()
     year_cols = [c for c in df.columns if isinstance(c, str) and c.isdigit()]
@@ -75,9 +26,7 @@ def melt_years(df, country_col, value_name="Value"):
     long_df = long_df.dropna(subset=["Year", value_name, "Country"])
     return long_df
 
-# ==============================================
-# DATA LOADERS
-# ==============================================
+
 def load_temperature():
     df = pd.read_csv(os.path.join(DATASET_DIR, "all countries global temperature.csv"))
     long_df = melt_years(df, "Country Name", "TempChange")
@@ -96,7 +45,7 @@ def load_gdp():
     long_df.rename(columns={"GDP": "Value"}, inplace=True)
     return long_df, "GDP (US$)"
 
-# CO₂ emission loader (wide co2_prod_YYYY → long Year/Value)
+
 def load_co2():
     df = pd.read_csv(os.path.join(DATASET_DIR, "co2_production.csv"))
 
@@ -166,6 +115,9 @@ def load_digital_connectivity():
     df = df.rename(columns={"Entity": "Country", "Internet Users(%)": "Value"})
     return df[["Country", "Year", "Value"]].dropna(), "Internet users (%) (alt)"
 
+DATASET_DIR = "datasets"
+
+
 # List of datasets in UI
 DATASETS = {
     "🌡️ Temperature Change": load_temperature,
@@ -181,9 +133,8 @@ DATASETS = {
 
 COLOR_MAPS = ["Viridis", "Plasma", "Cividis", "Turbo", "Inferno"]
 
-# ==============================================
-# SIDEBAR CONTROLS
-# ==============================================
+
+#sidebar 
 st.sidebar.header("⚙️ Controls")
 
 dataset_label = st.sidebar.selectbox("Choose Dataset", list(DATASETS.keys()))
